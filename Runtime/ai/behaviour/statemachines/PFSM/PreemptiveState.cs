@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Represents a preemptive state that can interrupt the current active state
-    /// of the FSM and take control when its preemption conditions are met.
+    /// of the PFSM and take control when its preemption conditions are met.
     /// </summary>
     /// <typeparam name="TEntity">
     /// The type of the entity controlled by the state machine.
@@ -33,6 +33,6 @@
         /// </summary>
         /// <param name="fsm">The finite state machine evaluating the preemption.</param>
         /// <param name="entity">The entity controlled by the state machine.</param>
-        public abstract void EvaluatePreemption(PFSM<TEntity> fsm, TEntity entity);
+        public abstract void EvaluatePreemption(PFSM<TEntity> pfsm, TEntity entity);
     }
 }
