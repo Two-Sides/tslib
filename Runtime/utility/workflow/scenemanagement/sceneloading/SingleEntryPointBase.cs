@@ -4,7 +4,7 @@ using TwoSides.Utility.EventChannels.NonPrimitive;
 using System;
 using System.Threading;
 
-namespace TwoSides.Utility.Organization.Workflow.SingleEntryPoint
+namespace TwoSides.Utility.Workflow.SceneManagement.SceneLoading
 {
     /// <summary>
     /// Base class that acts as a single entry point for scene initialization logic.
@@ -18,7 +18,7 @@ namespace TwoSides.Utility.Organization.Workflow.SingleEntryPoint
     /// Cancellation is automatically handled when the GameObject is destroyed,
     /// preventing notifications from being sent in invalid or unloaded scenes.
     /// </summary>
-    public abstract class SceneInitBase : MonoBehaviour
+    public abstract class SingleEntryPointBase : MonoBehaviour
     {
         /// <summary>
         /// Event channel triggered when the scene has finished its initialization.
@@ -30,10 +30,10 @@ namespace TwoSides.Utility.Organization.Workflow.SingleEntryPoint
         /// Implementations should observe the provided cancellation token and
         /// stop execution when cancellation is requested.
         /// </summary>
-        /// <param name="cToken">
+        /// <param name="ct">
         /// Cancellation token that is triggered when this GameObject is destroyed.
         /// </param>
-        protected abstract UniTask Execute(CancellationToken cToken);
+        protected abstract UniTask Execute(CancellationToken ct);
 
         private async void Start()
         {
@@ -53,7 +53,7 @@ namespace TwoSides.Utility.Organization.Workflow.SingleEntryPoint
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
-                // Expected cancellation when the GameObject is destroyed.
+                OnTokenCanceled(); // could be ignored
             }
             catch (Exception ex)
             {
@@ -62,9 +62,24 @@ namespace TwoSides.Utility.Organization.Workflow.SingleEntryPoint
             finally
             {
                 // Self-destruct after initialization completes or fails.
-                if (this) Destroy(gameObject);
+                Destroy(gameObject);
             }
         }
+
+        /// <summary>
+        /// Called when the initialization workflow is canceled due to this
+        /// component's destruction (i.e., when the <see cref="CancellationToken"/>
+        /// obtained from <c>GetCancellationTokenOnDestroy()</c> is canceled).
+        ///
+        /// This method is invoked only when <see cref="Execute"/> observes the token
+        /// and throws an <see cref="OperationCanceledException"/> as a result of that
+        /// cancellation.
+        ///
+        /// Override this to perform optional cleanup or diagnostics (e.g., logging,
+        /// resetting transient state). Implementations should be fast, side-effect
+        /// safe, and must not assume the scene is still loaded.
+        /// </summary>
+        protected virtual void OnTokenCanceled() { }
     }
 }
 

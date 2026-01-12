@@ -1,4 +1,4 @@
-namespace TwoSides.Utility.Organization.Workflow.Capabilities
+namespace TwoSides.Utility.Workflow.ComponentManagement.Capabilities
 {
     public interface IRegistrable
     {
