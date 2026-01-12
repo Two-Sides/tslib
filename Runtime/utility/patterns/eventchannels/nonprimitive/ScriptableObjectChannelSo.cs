@@ -1,0 +1,11 @@
+using UnityEngine;
+
+namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
+{
+    [CreateAssetMenu(
+        fileName = "ScriptableObjectChannelSo",
+        menuName = "EventChannels/Actions/ScriptableObjectChannelSo"
+    )]
+    public class ScriptableObjectChannelSo : ActionChannelBaseSo<ScriptableObject> { }
+}
+
