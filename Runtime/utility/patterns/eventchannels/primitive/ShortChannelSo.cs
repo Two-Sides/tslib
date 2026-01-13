@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "ShortChannelSo",
         menuName = "EventChannels/Actions/ShortChannelSo"
     )]
-    public class ShortChannelSo : ActionChannelBaseSo<short> { }
+    public class ShortChannelSo : SingleActionChannelBaseSo<short> { }
 }
 

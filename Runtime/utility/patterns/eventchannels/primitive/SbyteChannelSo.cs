@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "SbyteChannelSo",
         menuName = "EventChannels/Actions/SbyteChannelSo"
     )]
-    public class SbyteChannelSo : ActionChannelBaseSo<sbyte> { }
+    public class SbyteChannelSo : SingleActionChannelBaseSo<sbyte> { }
 }
 

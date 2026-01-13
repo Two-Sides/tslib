@@ -7,6 +7,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "StateChannelSo",
         menuName = "EventChannels/Actions/StateChannelSo"
     )]
-    public class StateChannelSo : ActionChannelBaseSo<State> { }
+    public class StateChannelSo : DoubleActionChannelBaseSo<State, bool> { }
 }
 

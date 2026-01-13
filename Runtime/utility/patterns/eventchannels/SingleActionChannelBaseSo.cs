@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TwoSides.Utility.Patterns.EventChannels
 {
-    public abstract class ActionChannelBaseSo<T> : ScriptableObject
+    public abstract class SingleActionChannelBaseSo<T> : ScriptableObject
     {
         /// <summary>
         /// Channel event.

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using TwoSides.Utility.Patterns.EventChannels.NonPrimitive;
+using UnityEngine;
 
 namespace TwoSides.AI.Behaviour.StateMachines.PFSM
 {
     /// <summary>
     /// Generic finite state machine (FSM) implementation that manages state transitions.
     /// </summary>
-    public class FSM : IStateMachine
+    public class FSM : IStateMachine, IDisposable
     {
         /// <summary>
         /// Equality comparer used to determine whether two states should be considered the same.
@@ -48,6 +50,11 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         public State PreviousState { get; private set; }
 
         /// <summary>
+        /// Optional event channel used to request a state change.
+        /// </summary>
+        [SerializeField] private StateChannelSo onChangeState;
+
+        /// <summary>
         /// Creates a new finite state machine.
         /// </summary>
         /// <param name="currentState">The initial active state.</param>
@@ -70,6 +77,9 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
             CurrentState = currentState ?? throw new ArgumentNullException(nameof(currentState));
             PreviousState = previousState ?? currentState;
             StateComparer = stateComparer ?? EqualityComparer<State>.Default;
+
+            if (onChangeState != null) // optional event, can be null
+                onChangeState.Subscribe(ChangeState);
 
             // Enters the initial state immediately upon creation.
             CurrentState.Enter(this);
@@ -131,6 +141,18 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         public bool IsSameState(State s1, State s2)
         {
             return StateComparer.Equals(s1, s2);
+        }
+
+        /// <summary>
+        /// Dispose is required to properly unsubscribe from the event and
+        /// release the reference held by the event delegate.
+        /// </summary>
+        public void Dispose()
+        {
+            if (onChangeState == null)
+                return;
+
+            onChangeState.Unsubscribe(ChangeState);
         }
     }
 }

@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "IntChannelSo",
         menuName = "EventChannels/Actions/IntChannelSo"
     )]
-    public class IntChannelSo : ActionChannelBaseSo<int> { }
+    public class IntChannelSo : SingleActionChannelBaseSo<int> { }
 }
 

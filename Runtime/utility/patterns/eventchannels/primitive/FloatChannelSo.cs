@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "FloatChannelSo",
         menuName = "EventChannels/Actions/FloatChannelSo"
     )]
-    public class FloatChannelSo : ActionChannelBaseSo<float> { }
+    public class FloatChannelSo : SingleActionChannelBaseSo<float> { }
 }
 

@@ -7,7 +7,7 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "InputChannelSo",
         menuName = "EventChannels/Actions/InputChannelSo"
     )]
-    public class InputChannelSo : ActionChannelBaseSo<InputAction.CallbackContext> { }
+    public class InputChannelSo : SingleActionChannelBaseSo<InputAction.CallbackContext> { }
 
 }
 

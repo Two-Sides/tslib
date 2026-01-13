@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "LongChannelSo",
         menuName = "EventChannels/Actions/LongChannelSo"
     )]
-    public class LongChannelSo : ActionChannelBaseSo<long> { }
+    public class LongChannelSo : SingleActionChannelBaseSo<long> { }
 }
 

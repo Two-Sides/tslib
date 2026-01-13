@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "ObjectChannelSo",
         menuName = "EventChannels/Actions/ObjectChannelSo"
     )]
-    public class ObjectChannelSo : ActionChannelBaseSo<Object> { }
+    public class ObjectChannelSo : SingleActionChannelBaseSo<Object> { }
 }
 
