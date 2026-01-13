@@ -4,13 +4,10 @@ using System.Collections.Generic;
 namespace TwoSides.AI.Behaviour.StateMachines.PFSM
 {
     /// <summary>
-    /// Generic preemptive finite state machine (PFSM) implementation that manages state transitions,
-    /// preemptive (interrupting) logic, and ownership of an entity.
+    /// Generic preemptive finite state machine (PFSM) implementation that manages state transitions
+    /// and preemptive (interrupting) logic.
     /// </summary>
-    /// <typeparam name="TEntity">
-    /// The type of the entity controlled by this state machine.
-    /// </typeparam>
-    public class PFSM<TEntity> : IStateMachine<TEntity>
+    public class PFSM : IStateMachine
     {
         /// <summary>
         /// Equality comparer used to determine whether two states should be considered the same.
@@ -23,50 +20,45 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <example>
         /// Example of a comparer that considers two states equal if they are of the same runtime type:
         /// <code>
-        /// public sealed class StateTypeComparer&lt;TEntity&gt; : IEqualityComparer&lt;State&lt;TEntity&gt;&gt;
+        /// public sealed class StateTypeComparer : IEqualityComparer&lt;State&gt;
         /// {
-        ///     public bool Equals(State&lt;TEntity&gt; x, State&lt;TEntity&gt; y)
+        ///     public bool Equals(State; x, State y)
         ///     {
         ///         if (ReferenceEquals(x, y)) return true;
         ///         if (x is null || y is null) return false;
         ///         return x.GetType() == y.GetType();
         ///     }
         ///
-        ///     public int GetHashCode(State&lt;TEntity&gt; obj)
+        ///     public int GetHashCode(State obj)
         ///     {
         ///         return obj?.GetType().GetHashCode() ?? 0;
         ///     }
         /// }
         /// </code>
         /// </example>
-        public IEqualityComparer<State<TEntity>> StateComparer { get; private set; }
-
-        /// <summary>
-        /// The entity currently controlled by this state machine.
-        /// </summary>
-        public TEntity Owner { get; private set; }
+        public IEqualityComparer<State> StateComparer { get; private set; }
 
         /// <summary>
         /// The currently active state.
         /// </summary>
-        public State<TEntity> CurrentState { get; private set; }
+        public State CurrentState { get; private set; }
 
         /// <summary>
         /// The previously active state, typically used for reverting transitions.
         /// </summary>
-        public State<TEntity> PreviousState { get; private set; }
+        public State PreviousState { get; private set; }
 
         /// <summary>
-        /// Optional preemptive state that can evaluate whether it should interrupt the current state.
+        /// Preemptive state that can evaluate whether it should interrupt the current state.
         /// When a preemption occurs, the preemptive state is transitioned into and behaves like any
-        /// other state (its <see cref="State{TEntity}.Enter"/>, <see cref="State{TEntity}.Execute"/>,
-        /// and <see cref="State{TEntity}.Exit"/> methods are invoked as part of normal state changes).
+        /// other state (its <see cref="State.Enter"/>, <see cref="State.Execute"/>,
+        /// and <see cref="State.Exit"/> methods are invoked as part of normal state changes).
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The <see cref="PreemptiveState{TEntity}.EvaluatePreemption(PFSM{TEntity}, TEntity)"/> method
+        /// The <see cref="PreemptiveState.EvaluatePreemption(PFSM)"/> method
         /// is called every update cycle (if a preemptive state is assigned). This method typically decides
-        /// whether to call <see cref="ChangeState(State{TEntity}, bool)"/> to transition into the preemptive
+        /// whether to call <see cref="ChangeState(State, bool)"/> to transition into the preemptive
         /// state or another state.
         /// </para>
         /// <para>
@@ -74,42 +66,37 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// to take over from any other active state.
         /// </para>
         /// </remarks>
-        public PreemptiveState<TEntity> PreemptiveState { get; private set; }
+        public PreemptiveState PreemptiveState { get; private set; }
 
         /// <summary>
         /// Creates a new preemptive finite state machine.
         /// </summary>
-        /// <param name="owner">The entity controlled by the FSM.</param>
         /// <param name="currentState">The initial active state.</param>
         /// <param name="previousState">
         /// The initial previous state. If <c>null</c>, it defaults to <paramref name="currentState"/>.
         /// </param>
-        /// <param name="preemptiveState">
-        /// An optional preemptive state. if <c>null</c>, it disables preemption.
-        /// </param>
+        /// <param name="preemptiveState">Preemptive state</param>
         /// <param name="stateComparer">
         /// Optional comparer used to determine state equality.
         /// If <c>null</c>, <see cref="EqualityComparer{T}.Default"/> is used.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// Thrown if <paramref name="owner"/> or <paramref name="currentState"/> is <c>null</c>.
+        /// Thrown if <paramref name="currentState"/> or <paramref name="preemptiveState"/> is <c>null</c>.
         /// </exception>
         public PFSM(
-            TEntity owner,
-            State<TEntity> currentState,
-            State<TEntity> previousState = null,
-            PreemptiveState<TEntity> preemptiveState = null,
-            IEqualityComparer<State<TEntity>> stateComparer = null
+            State currentState,
+            PreemptiveState preemptiveState,
+            State previousState = null,
+            IEqualityComparer<State> stateComparer = null
             )
         {
-            Owner = owner ?? throw new ArgumentNullException(nameof(owner));
             CurrentState = currentState ?? throw new ArgumentNullException(nameof(currentState));
+            PreemptiveState = preemptiveState ?? throw new ArgumentNullException(nameof(preemptiveState));
             PreviousState = previousState ?? currentState;
-            PreemptiveState = preemptiveState;
-            StateComparer = stateComparer ?? EqualityComparer<State<TEntity>>.Default;
+            StateComparer = stateComparer ?? EqualityComparer<State>.Default;
 
             // Enters the initial state immediately upon creation.
-            CurrentState.Enter(this, Owner);
+            CurrentState.Enter(this);
         }
 
         /// <summary>
@@ -122,12 +109,12 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         {
             var before = CurrentState;
 
-            PreemptiveState?.EvaluatePreemption(this, Owner);
+            PreemptiveState?.EvaluatePreemption(this);
 
             if (!IsSameState(before, CurrentState))
                 return; // state changed during preemption; skip Execute for this tick
 
-            CurrentState.Execute(this, Owner);
+            CurrentState.Execute(this);
         }
 
         /// <summary>
@@ -141,7 +128,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="newState"/> is <c>null</c>.
         /// </exception>
-        public void ChangeState(State<TEntity> newState, bool allowSameState = false)
+        public void ChangeState(State newState, bool allowSameState = false)
         {
             if (newState == null)
                 throw new ArgumentNullException(nameof(newState));
@@ -150,9 +137,9 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
                 return;
 
             PreviousState = CurrentState;
-            CurrentState.Exit(this, Owner);
+            CurrentState.Exit(this);
             CurrentState = newState;
-            CurrentState.Enter(this, Owner);
+            CurrentState.Enter(this);
         }
 
         /// <summary>
@@ -164,12 +151,15 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <param name="allowSameState">
         /// If <c>true</c>, allows assigning the same preemptive state again.
         /// </param>
-        public void SetPreemptiveState(PreemptiveState<TEntity> newPreempState, bool allowSameState = false)
+        public void SetPreemptiveState(PreemptiveState newPreempState, bool allowSameState = false)
         {
+            if (newPreempState == null)
+                throw new ArgumentNullException(nameof(newPreempState));
+
             if (!allowSameState && IsSameState(PreemptiveState, newPreempState))
                 return;
 
-            PreemptiveState = newPreempState; // Can be null to disable preemption.
+            PreemptiveState = newPreempState;
         }
 
         /// <summary>
@@ -185,32 +175,6 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         }
 
         /// <summary>
-        /// Changes the owner entity controlled by this PFSM.
-        /// </summary>
-        /// <param name="newOwner">The new owner entity.</param>
-        /// <param name="reenterCurrentState">
-        /// If <c>true</c>, the current state will be exited and re-entered
-        /// using the new owner.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if <paramref name="newOwner"/> is <c>null</c>.
-        /// </exception>
-        public void ChangeOwner(TEntity newOwner, bool reenterCurrentState)
-        {
-            if (newOwner == null)
-                throw new ArgumentNullException(nameof(newOwner));
-
-            var oldOwner = Owner;
-            Owner = newOwner;
-
-            if (reenterCurrentState)
-            {
-                CurrentState.Exit(this, oldOwner);
-                CurrentState.Enter(this, Owner);
-            }
-        }
-
-        /// <summary>
         /// Determines whether two states are considered the same according to the configured comparer.
         /// </summary>
         /// <param name="s1">The first state.</param>
@@ -218,7 +182,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <returns>
         /// <c>true</c> if the states are considered equal; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsSameState(State<TEntity> s1, State<TEntity> s2)
+        public bool IsSameState(State s1, State s2)
         {
             return StateComparer.Equals(s1, s2);
         }
