@@ -11,23 +11,20 @@
         /// Use this method to initialize state-specific data,
         /// register listeners, prepare behavior, etc.
         /// </summary>
-        /// <param name="stateMachine">The finite state machine that owns this state.</param>
-        public virtual void Enter(IStateMachine stateMachine) { }
+        public virtual void Enter() { }
 
         /// <summary>
         /// Called every update cycle while this state is the current active state.
         /// Contains the main behavior logic of the state.
         /// </summary>
-        /// <param name="stateMachine">The finite state machine that owns this state.</param>
-        public virtual void Execute(IStateMachine stateMachine) { }
+        public virtual void Execute() { }
 
         /// <summary>
         /// Called once when the FSM exits this state.
         /// Use this method to clean up state-specific data,
         /// unregister listeners,  stop ongoing behavior, etc.
         /// </summary>
-        /// <param name="stateMachine">The finite state machine that owns this state.</param>
-        public virtual void Exit(IStateMachine stateMachine) { }
+        public virtual void Exit() { }
     }
 }
 

@@ -1,7 +1,5 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
-using TwoSides.Utility.Patterns.EventChannels.NonPrimitive;
 
 namespace TwoSides.AI.Behaviour.StateMachines.PFSM
 {
@@ -9,7 +7,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
     /// Generic preemptive finite state machine (PFSM) implementation that manages state transitions
     /// and preemptive (interrupting) logic.
     /// </summary>
-    public class PFSM : IStateMachine, IDisposable
+    public class PFSM : IStateMachine
     {
         /// <summary>
         /// Equality comparer used to determine whether two states should be considered the same.
@@ -60,7 +58,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <para>
         /// The <see cref="PreemptiveState.EvaluatePreemption(PFSM)"/> method
         /// is called every update cycle (if a preemptive state is assigned). This method typically decides
-        /// whether to call <see cref="ChangeState(State, bool)"/> to transition into the preemptive
+        /// whether to call <see cref="TransitionTo(State, bool)"/> to transition into the preemptive
         /// state or another state.
         /// </para>
         /// <para>
@@ -69,11 +67,6 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// </para>
         /// </remarks>
         public PreemptiveState PreemptiveState { get; private set; }
-
-        /// <summary>
-        /// Optional event channel used to request a state change.
-        /// </summary>
-        [SerializeField] private StateChannelSo onChangeState;
 
         /// <summary>
         /// Creates a new preemptive finite state machine.
@@ -102,11 +95,8 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
             PreviousState = previousState ?? currentState;
             StateComparer = stateComparer ?? EqualityComparer<State>.Default;
 
-            if (onChangeState != null) // optional event, can be null
-                onChangeState.Subscribe(ChangeState);
-
             // Enters the initial state immediately upon creation.
-            CurrentState.Enter(this);
+            CurrentState.Enter();
         }
 
         /// <summary>
@@ -115,7 +105,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// the execution of the previous state is skipped for this update cycle.
         /// The current state is updated in second place.
         /// </summary>
-        public void Update()
+        public void Execute()
         {
             var before = CurrentState;
 
@@ -124,7 +114,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
             if (!IsSameState(before, CurrentState))
                 return; // state changed during preemption; skip Execute for this tick
 
-            CurrentState.Execute(this);
+            CurrentState.Execute();
         }
 
         /// <summary>
@@ -138,7 +128,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="newState"/> is <c>null</c>.
         /// </exception>
-        public void ChangeState(State newState, bool allowSameState = false)
+        public void TransitionTo(State newState, bool allowSameState = false)
         {
             if (newState == null)
                 throw new ArgumentNullException(nameof(newState));
@@ -147,9 +137,9 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
                 return;
 
             PreviousState = CurrentState;
-            CurrentState.Exit(this);
+            CurrentState.Exit();
             CurrentState = newState;
-            CurrentState.Enter(this);
+            CurrentState.Enter();
         }
 
         /// <summary>
@@ -179,9 +169,9 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// If <c>true</c>, allows re-entering the same state if the previous
         /// and current states are considered equal.
         /// </param>
-        public void RevertToPreviousState(bool allowSameState = false)
+        public void RevertToPrevious(bool allowSameState = false)
         {
-            ChangeState(PreviousState, allowSameState);
+            TransitionTo(PreviousState, allowSameState);
         }
 
         /// <summary>
@@ -195,18 +185,6 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         public bool IsSameState(State s1, State s2)
         {
             return StateComparer.Equals(s1, s2);
-        }
-
-        /// <summary>
-        /// Dispose is required to properly unsubscribe from the event and
-        /// release the reference held by the event delegate.
-        /// </summary>
-        public void Dispose()
-        {
-            if (onChangeState == null)
-                return;
-
-            onChangeState.Unsubscribe(ChangeState);
         }
     }
 }
