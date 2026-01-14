@@ -1,6 +1,7 @@
-using TwoSides.AI.Behaviour.StateMachines;
-
-public class HierarchicalState : State
+namespace TwoSides.AI.Behaviour.StateMachines.HFSM
 {
-    public HierarchicalState Ancestor { get; set; }
+    public abstract class HierarchicalState : State
+    {
+        public HierarchicalState Ancestor { get; set; }
+    }
 }
