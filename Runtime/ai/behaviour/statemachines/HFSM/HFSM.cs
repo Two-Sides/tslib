@@ -16,28 +16,34 @@ namespace TwoSides.AI.Behaviour.StateMachines.HFSM
         public HFSM(
             HierarchicalState root,
             HierarchicalState defaultLeaf,
-            int maxDepth,
+            int maxDepth = 10,
             IEqualityComparer<State> stateComparer = null
             )
         {
+            Root = root ?? throw new ArgumentNullException(nameof(root));
+            CurrentLeaf = defaultLeaf ?? throw new ArgumentNullException(nameof(defaultLeaf));
+            PreviousLeaf = null;
+            StateComparer = stateComparer ?? EqualityComparer<State>.Default;
+
             Started = false;
             Running = false;
 
             CurrentPath = new(maxDepth);
             SetCurrentPath(defaultLeaf);
-
-            Root = root;
-            CurrentLeaf = defaultLeaf;
-            PreviousLeaf = null;
-            StateComparer = stateComparer ?? EqualityComparer<State>.Default;
         }
 
-        public void Start()
+        public void Start(bool doEnter = true)
         {
             if (Running)
                 throw new InvalidOperationException(
                     $"(running) The HFSM must be stopped before starting it again."
                 );
+
+            if (!doEnter)
+            {
+                Started = true;
+                return;
+            }
 
             for (int i = CurrentPath.Count - 1; i >= 0; i--)
             {
@@ -71,11 +77,11 @@ namespace TwoSides.AI.Behaviour.StateMachines.HFSM
             for (int i = CurrentPath.Count - 1; i >= 0; i--)
             {
                 var state = CurrentPath[i];
-                state?.Execute();
+                state?.Execute(this);
             }
         }
 
-        public void TransitionTo(State newLeaf, bool allowSameState = false)
+        public void TransitionTo(State newLeaf, bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
             if (newLeaf == null)
                 throw new ArgumentNullException(nameof(newLeaf));
@@ -95,30 +101,34 @@ namespace TwoSides.AI.Behaviour.StateMachines.HFSM
             // save current leaf
             PreviousLeaf = CurrentLeaf;
 
-            // get the lowest common node
-            var lca = LCA(CurrentLeaf, targetLeaf);
-
-            // exit from bottom to lca
-            while (CurrentLeaf != lca)
+            // a current path must be set
+            if (CurrentPath?.Count > 0 && doExit)
             {
-                CurrentLeaf?.Exit();
-                CurrentLeaf = CurrentLeaf.Ancestor;
+                // get the lowest common node
+                var lca = LCA(CurrentLeaf, targetLeaf);
+
+                // exit from bottom to lca
+                while (CurrentLeaf != lca)
+                {
+                    CurrentLeaf?.Exit();
+                    CurrentLeaf = CurrentLeaf.Ancestor;
+                }
             }
 
             SetCurrentPath(targetLeaf); // updates current path
 
             CurrentLeaf = targetLeaf; // updates current leaf.
 
-            Start(); // starts again the machine
+            Start(doEnter); // starts again the machine
             Run(); // continues running but using the new path
         }
 
-        public void RevertToPrevious(bool allowSameState = false)
+        public void RevertToPrevious(bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
             if (PreviousLeaf == null)
                 throw new ArgumentNullException(nameof(PreviousLeaf));
 
-            TransitionTo(PreviousLeaf, allowSameState);
+            TransitionTo(PreviousLeaf, doEnter, doExit, allowSameState);
         }
 
         public bool IsSameState(State s1, State s2)

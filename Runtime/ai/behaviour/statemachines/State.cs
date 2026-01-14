@@ -17,7 +17,8 @@
         /// Called every update cycle while this state is the current active state.
         /// Contains the main behavior logic of the state.
         /// </summary>
-        public virtual void Execute() { }
+        /// <param name="stateMachine">Reference to the owner state machine of this state.</param>
+        public virtual void Execute(IStateMachine stateMachine) { }
 
         /// <summary>
         /// Called once when the FSM exits this state.

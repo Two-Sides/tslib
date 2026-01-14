@@ -80,13 +80,19 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// </summary>
         public void Execute()
         {
-            CurrentState?.Execute();
+            CurrentState?.Execute(this);
         }
 
         /// <summary>
         /// Transitions the FSM to a new current state.
         /// </summary>
         /// <param name="newState">The state to transition to.</param>
+        /// <param name="doEnter">
+        /// If <c>true</c>, executes <see cref="State.Enter"/> while transitioning.
+        /// </param>
+        /// <param name="doExit">
+        /// If <c>true</c>, executes <see cref="State.Exit"/> while transitioning.
+        /// </param>
         /// <param name="allowSameState">
         /// If <c>true</c>, allows re-entering the same state even if it is considered equal
         /// to the current state.
@@ -94,7 +100,7 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="newState"/> is <c>null</c>.
         /// </exception>
-        public void TransitionTo(State newState, bool allowSameState = false)
+        public void TransitionTo(State newState, bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
             if (newState == null)
                 throw new ArgumentNullException(nameof(newState));
@@ -103,9 +109,9 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
                 return;
 
             PreviousState = CurrentState;
-            CurrentState.Exit();
+            if (doExit) CurrentState.Exit();
             CurrentState = newState;
-            CurrentState.Enter();
+            if (doEnter) CurrentState.Enter();
         }
 
         /// <summary>
@@ -115,9 +121,15 @@ namespace TwoSides.AI.Behaviour.StateMachines.PFSM
         /// If <c>true</c>, allows re-entering the same state if the previous
         /// and current states are considered equal.
         /// </param>
-        public void RevertToPrevious(bool allowSameState = false)
+        /// /// <param name="doEnter">
+        /// If <c>true</c>, executes <see cref="State.Enter"/> while transitioning.
+        /// </param>
+        /// <param name="doExit">
+        /// If <c>true</c>, executes <see cref="State.Exit"/> while transitioning.
+        /// </param>
+        public void RevertToPrevious(bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
-            TransitionTo(PreviousState, allowSameState);
+            TransitionTo(PreviousState, doEnter, doExit, allowSameState);
         }
 
         /// <summary>
