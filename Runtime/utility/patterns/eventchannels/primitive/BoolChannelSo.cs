@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "BoolChannelSo",
         menuName = "EventChannels/Actions/BoolChannelSo"
     )]
-    public class BoolChannelSo : ActionChannelBaseSo<bool> { }
+    public class BoolChannelSo : SingleActionChannelBaseSo<bool> { }
 }
 

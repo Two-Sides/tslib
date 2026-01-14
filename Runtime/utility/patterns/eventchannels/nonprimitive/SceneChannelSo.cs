@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "SceneChannelSo",
         menuName = "EventChannels/Actions/SceneChannelSo"
     )]
-    public class SceneChannelSo : ActionChannelBaseSo<UnityEngine.SceneManagement.Scene> { }
+    public class SceneChannelSo : SingleActionChannelBaseSo<UnityEngine.SceneManagement.Scene> { }
 }
 

@@ -6,7 +6,7 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "MonoBehaviourChannelSo",
         menuName = "EventChannels/Actions/MonoBehaviourChannelSo"
     )]
-    public class MonoBehaviourChannelSo : ActionChannelBaseSo<MonoBehaviour> { }
+    public class MonoBehaviourChannelSo : SingleActionChannelBaseSo<MonoBehaviour> { }
 
 }
 

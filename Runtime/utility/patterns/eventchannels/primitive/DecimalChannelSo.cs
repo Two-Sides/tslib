@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "DecimalChannelSo",
         menuName = "EventChannels/Actions/DecimalChannelSo"
     )]
-    public class DecimalChannelSo : ActionChannelBaseSo<decimal> { }
+    public class DecimalChannelSo : SingleActionChannelBaseSo<decimal> { }
 }
 

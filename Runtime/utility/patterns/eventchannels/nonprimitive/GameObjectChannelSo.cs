@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
         fileName = "GameObjectChannelSo",
         menuName = "EventChannels/Actions/GameObjectChannelSo"
     )]
-    public class GameObjectChannelSo : ActionChannelBaseSo<GameObject> { }
+    public class GameObjectChannelSo : SingleActionChannelBaseSo<GameObject> { }
 }
 

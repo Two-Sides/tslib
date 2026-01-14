@@ -6,6 +6,6 @@ namespace TwoSides.Utility.Patterns.EventChannels.Primitive
         fileName = "UlongChannelSo",
         menuName = "EventChannels/Actions/UlongChannelSo"
     )]
-    public class UlongChannelSo : ActionChannelBaseSo<ulong> { }
+    public class UlongChannelSo : SingleActionChannelBaseSo<ulong> { }
 }
 
