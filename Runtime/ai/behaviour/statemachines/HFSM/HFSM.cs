@@ -7,20 +7,19 @@ namespace TwoSides.AI.Behaviour.StateMachines.HFSM
     {
         public bool Started { get; private set; }
         public bool Running { get; private set; }
-        public HierarchicalState Root { get; private set; }
+        public HierarchicalState Root { get; }
         public HierarchicalState CurrentLeaf { get; private set; } // lower active state
         public HierarchicalState PreviousLeaf { get; private set; } // previous lower active state
         public List<HierarchicalState> CurrentPath { get; private set; } // reversed active path
         public IEqualityComparer<State> StateComparer { get; private set; }
 
         public HFSM(
-            HierarchicalState root,
             HierarchicalState defaultLeaf,
             int maxDepth = 10,
             IEqualityComparer<State> stateComparer = null
             )
         {
-            Root = root ?? throw new ArgumentNullException(nameof(root));
+            Root = new() { Ancestor = null };
             CurrentLeaf = defaultLeaf ?? throw new ArgumentNullException(nameof(defaultLeaf));
             PreviousLeaf = null;
             StateComparer = stateComparer ?? EqualityComparer<State>.Default;
