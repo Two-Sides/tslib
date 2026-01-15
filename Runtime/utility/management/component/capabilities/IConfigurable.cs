@@ -6,11 +6,6 @@ namespace TwoSides.Utility.Management.Component.Capabilities
         /// Configures the object's values.
         /// </summary>
         public void Configure();
-
-        /// <summary>
-        /// Deconfigures the object so it can be destroyed.
-        /// </summary>
-        public void Deconfigure();
     }
 }
 
