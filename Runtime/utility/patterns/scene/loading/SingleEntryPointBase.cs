@@ -3,6 +3,7 @@ using UnityEngine;
 using TwoSides.Utility.Patterns.EventChannels.NonPrimitive;
 using System;
 using System.Threading;
+using TwoSides.Utility.Debug.Logging;
 
 namespace TwoSides.Utility.Patterns.Scene.Loading
 {
@@ -57,7 +58,7 @@ namespace TwoSides.Utility.Patterns.Scene.Loading
             }
             catch (Exception ex)
             {
-                Debug.Logging.Logger.LogException(ex, this);
+                TSLogger.LogException(ex, this);
             }
             finally
             {

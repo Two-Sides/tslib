@@ -5,7 +5,7 @@ namespace TwoSides.Utility.Debug.Logging
     /// <summary>
     /// Lightweight logger that can be enabled or disabled globally.
     /// </summary>
-    public static class Logger
+    public static class TSLogger
     {
         /// <summary>
         /// Gets or sets whether logging is enabled.
