@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace TwoSides.Utility.Management.Component.Capabilities
 {
-    public interface IActivatable
+    public interface IActivatableAsync
     {
         /// <summary>
         /// Activates the element.

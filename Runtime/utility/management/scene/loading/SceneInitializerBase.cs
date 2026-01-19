@@ -7,7 +7,7 @@ namespace TwoSides.Utility.Management.Scene.Loading
     /// <summary>
     /// Base class that defines a structured, multi-phase workflow for scene initialization.
     ///
-    /// This class extends <see cref="SingleEntryPointBase"/> and provides a fixed execution
+    /// This class extends <see cref="SceneEntryBase"/> and provides a fixed execution
     /// pipeline composed of well-defined steps:
     ///
     /// 1. Instantiation of required objects and resources.
@@ -22,7 +22,7 @@ namespace TwoSides.Utility.Management.Scene.Loading
     /// All phases receive the same <see cref="CancellationToken"/>, allowing the workflow
     /// to cooperatively stop execution when the owning GameObject is destroyed.
     /// </summary>
-    public abstract class SceneInitializerBase : SingleEntryPointBase
+    public abstract class SceneInitializerBase : SceneEntryBase
     {
         /// <summary>
         /// Executes the complete scene initialization workflow in a strict, sequential order.

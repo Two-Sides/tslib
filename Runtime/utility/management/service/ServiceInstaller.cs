@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TwoSides.Utility.Debug.Logging;
 using UnityEngine;
 
 namespace TwoSides.Utility.Management.Service
@@ -17,10 +18,9 @@ namespace TwoSides.Utility.Management.Service
     public class ServiceInstaller : MonoBehaviour
     {
         /// <summary>
-        /// List of services to be registered during installation.
+        /// Services to be registered during installation.
         /// </summary>
-        [SerializeField]
-        private List<ServiceBaseSo> _services;
+        [SerializeField] private ServiceBaseSo[] _services;
 
         /// <summary>
         /// Registers all configured services and then destroys this
@@ -31,11 +31,14 @@ namespace TwoSides.Utility.Management.Service
         /// </summary>
         public void Install()
         {
-            for (int i = 0; i < _services.Count; i++)
+            if (_services?.Length == 0)
+                TSLogger.LogWarning("(empty) No services registeres in Service Installer.");
+
+            for (int i = 0; i < _services.Length; i++)
             {
                 var service = _services[i];
                 if (service == null) continue;
-                service.Register();
+                service.Install();
             }
 
             // destroys gameobject after everything is installed.

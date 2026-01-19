@@ -19,7 +19,7 @@ namespace TwoSides.Utility.Patterns.Scene.Loading
     /// Cancellation is automatically handled when the GameObject is destroyed,
     /// preventing notifications from being sent in invalid or unloaded scenes.
     /// </summary>
-    public abstract class SingleEntryPointBase : MonoBehaviour
+    public abstract class SceneEntryBase : MonoBehaviour
     {
         /// <summary>
         /// Event channel triggered when the scene has finished its initialization.
