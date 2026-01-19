@@ -51,7 +51,7 @@ namespace TwoSides.Utility.Management.Service
         /// <summary>
         /// Returns the currently registered controller, or null if none is registered.
         /// </summary>
-        public ControllerBase GetController() => _registeredController;
+        public T GetController<T>() where T : ControllerBase => (T)_registeredController;
 
         /// <summary>
         /// Unregisters the currently registered controller.
