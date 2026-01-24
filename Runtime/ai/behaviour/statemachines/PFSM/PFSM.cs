@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TwoSides.AI.Behaviour.StateMachines.PFSM
+namespace TSLib.AI.Behaviour.StateMachines.PFSM
 {
     /// <summary>
     /// Generic preemptive finite state machine (PFSM) implementation that manages state transitions

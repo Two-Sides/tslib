@@ -1,11 +1,11 @@
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using TwoSides.Utility.Patterns.EventChannels.NonPrimitive;
+using TSLib.Utility.Patterns.EventChannels.NonPrimitive;
 using System;
 using System.Threading;
-using TwoSides.Utility.Debug.Logging;
+using TSLib.Utility.Debug.Logging;
 
-namespace TwoSides.Utility.Patterns.Scene.Loading
+namespace TSLib.Utility.Patterns.Scene.Loading
 {
     /// <summary>
     /// Base class that acts as a single entry point for scene initialization logic.

@@ -1,4 +1,4 @@
-namespace TwoSides.AI.Behaviour.StateMachines
+namespace TSLib.AI.Behaviour.StateMachines
 {
     public interface IStateMachine
     {

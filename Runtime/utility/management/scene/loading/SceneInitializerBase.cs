@@ -1,8 +1,8 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using TwoSides.Utility.Patterns.Scene.Loading;
+using TSLib.Utility.Patterns.Scene.Loading;
 
-namespace TwoSides.Utility.Management.Scene.Loading
+namespace TSLib.Utility.Management.Scene.Loading
 {
     /// <summary>
     /// Base class that defines a structured, multi-phase workflow for scene initialization.
@@ -11,7 +11,8 @@ namespace TwoSides.Utility.Management.Scene.Loading
     /// pipeline composed of well-defined steps:
     ///
     /// 1. Instantiation of required objects and resources.
-    /// 2. Registration of services in <see cref="ServiceLocator"/> (you should resolve dependencies here).
+    /// 2. Registration of services in <see cref="Service.ServiceLocator"/> (you should 
+    ///     resolve dependencies here).
     /// 3. Initialization of elements.
     /// 4. Configuration of elements.
     /// 5. Optional custom continuation logic (synchronous or asynchronous).
@@ -33,12 +34,18 @@ namespace TwoSides.Utility.Management.Scene.Loading
         /// </param>
         protected sealed override async UniTask Execute(CancellationToken ct)
         {
+            await PreconfigureEnvironmentAsync(ct);
             await InstantiateAsync(ct);
             await RegisterAsync(ct);
             await InitializeAsync(ct);
             await Configure(ct);
             await ExecuteCustomOperationsAsync(ct);
         }
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        protected abstract UniTask PreconfigureEnvironmentAsync(CancellationToken ct);
 
         /// <summary>
         /// Instantiates all scene-specific objects, assets, or resources required

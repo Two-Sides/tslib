@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace TwoSides.Utility.Patterns.EventChannels
+namespace TSLib.Utility.Patterns.EventChannels
 {
     public abstract class SingleActionChannelBaseSo<T> : ScriptableObject
     {

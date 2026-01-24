@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System.Threading;
 
-namespace TwoSides.Utility.Management.Component.Capabilities
+namespace TSLib.Utility.Management.Component.Capabilities.Async
 {
     public interface IActivatableAsync
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using TwoSides.Utility.Debug.Logging;
+using TSLib.Utility.Debug.Logging;
 using UnityEngine;
 
-namespace TwoSides.Utility.Management.Service
+namespace TSLib.Utility.Management.Service
 {
     /// <summary>
     /// MonoBehaviour responsible for installing a predefined set of services

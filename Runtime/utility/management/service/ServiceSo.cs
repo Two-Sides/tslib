@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using TwoSides.Utility.Management.Component.Capabilities;
+using TSLib.Utility.Management.Component.Capabilities;
 using UnityEngine;
 
-namespace TwoSides.Utility.Management.Service
+namespace TSLib.Utility.Management.Service
 {
     /// <summary>
     /// ScriptableObject-based service that acts as a registry

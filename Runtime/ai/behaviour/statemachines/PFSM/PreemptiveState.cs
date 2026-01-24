@@ -1,4 +1,4 @@
-﻿namespace TwoSides.AI.Behaviour.StateMachines.PFSM
+﻿namespace TSLib.AI.Behaviour.StateMachines.PFSM
 {
     /// <summary>
     /// Represents a preemptive state that can interrupt the current active state

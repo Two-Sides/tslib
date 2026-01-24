@@ -1,6 +1,6 @@
 using System;
 
-namespace TwoSides.Utility.Debug.Logging
+namespace TSLib.Utility.Debug.Logging
 {
     /// <summary>
     /// Lightweight logger that can be enabled or disabled globally.

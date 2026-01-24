@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
+namespace TSLib.Utility.Patterns.EventChannels.NonPrimitive
 {
     [CreateAssetMenu(
         fileName = "InputChannelSo",

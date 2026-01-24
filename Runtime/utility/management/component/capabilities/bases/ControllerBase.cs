@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace TwoSides.Utility.Management.Component.Capabilities
+namespace TSLib.Utility.Management.Component.Capabilities
 {
     public abstract class ControllerBase : ComponentBase
     {

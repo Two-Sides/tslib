@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TwoSides.Utility.Management.Service
+namespace TSLib.Utility.Management.Service
 {
     /// <summary>
     /// Simple static service locator used to register and retrieve globally

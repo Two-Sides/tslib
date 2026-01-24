@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
+namespace TSLib.Utility.Patterns.EventChannels.NonPrimitive
 {
     [CreateAssetMenu(
         fileName = "ObjectChannelSo",

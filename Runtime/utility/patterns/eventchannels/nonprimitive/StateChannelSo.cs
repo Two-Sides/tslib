@@ -1,7 +1,7 @@
-using TwoSides.AI.Behaviour.StateMachines;
+using TSLib.AI.Behaviour.StateMachines;
 using UnityEngine;
 
-namespace TwoSides.Utility.Patterns.EventChannels.NonPrimitive
+namespace TSLib.Utility.Patterns.EventChannels.NonPrimitive
 {
     [CreateAssetMenu(
         fileName = "StateChannelSo",

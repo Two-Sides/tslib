@@ -1,4 +1,4 @@
-﻿namespace TwoSides.AI.Behaviour.StateMachines
+﻿namespace TSLib.AI.Behaviour.StateMachines
 {
     /// <summary>
     /// Base class for all states used by a finite state machine (FSM).

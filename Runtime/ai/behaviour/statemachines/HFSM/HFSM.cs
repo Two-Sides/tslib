@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TwoSides.AI.Behaviour.StateMachines.HFSM
+namespace TSLib.AI.Behaviour.StateMachines.HFSM
 {
     public class HFSM : IStateMachine
     {
