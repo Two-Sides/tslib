@@ -2,7 +2,7 @@ namespace TSLib.AI.Behaviour.StateMachines
 {
     public interface IStateMachine
     {
-        public void Execute();
+        public void Execute(float deltaTime);
 
         public void TransitionTo(State newState, bool doEnter, bool doExit, bool allowSameState);
 

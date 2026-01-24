@@ -78,9 +78,9 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
         /// <summary>
         /// The current state is updated.
         /// </summary>
-        public void Execute()
+        public void Execute(float deltaTime)
         {
-            CurrentState?.Execute(this);
+            CurrentState?.Execute(this, deltaTime);
         }
 
         /// <summary>

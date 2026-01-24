@@ -105,7 +105,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
         /// the execution of the previous state is skipped for this update cycle.
         /// The current state is updated in second place.
         /// </summary>
-        public void Execute()
+        public void Execute(float deltaTime)
         {
             var before = CurrentState;
 
@@ -114,7 +114,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
             if (!IsSameState(before, CurrentState))
                 return; // state changed during preemption; skip Execute for this tick
 
-            CurrentState.Execute(this);
+            CurrentState.Execute(this, deltaTime);
         }
 
         /// <summary>

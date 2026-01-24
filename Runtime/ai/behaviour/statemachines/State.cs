@@ -18,7 +18,7 @@
         /// Contains the main behavior logic of the state.
         /// </summary>
         /// <param name="stateMachine">Reference to the owner state machine of this state.</param>
-        public virtual void Execute(IStateMachine stateMachine) { }
+        public virtual void Execute(IStateMachine stateMachine, float deltaTime) { }
 
         /// <summary>
         /// Called once when the FSM exits this state.

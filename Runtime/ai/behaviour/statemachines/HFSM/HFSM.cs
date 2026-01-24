@@ -70,14 +70,14 @@ namespace TSLib.AI.Behaviour.StateMachines.HFSM
             Running = false;
         }
 
-        public void Execute()
+        public void Execute(float deltaTime)
         {
             if (!Running || !Started) return;
 
             for (int i = CurrentPath.Count - 1; i >= 0; i--)
             {
                 var state = CurrentPath[i];
-                state?.Execute(this);
+                state?.Execute(this, deltaTime);
             }
         }
 
