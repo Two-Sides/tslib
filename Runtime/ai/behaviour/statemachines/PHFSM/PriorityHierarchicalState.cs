@@ -7,6 +7,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
     public abstract class PriorityHierarchicalState : HierarchicalState
     {
         public abstract int Priority { get; }
+        public abstract bool IsInterruptible { get; }
 
         public List<Transition> Transitions { get; } = new();
 
@@ -17,7 +18,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 
             // Checking transitions.
 
-            if (!ExitCondition()) return;
+            if (!ExitCondition() && !IsInterruptible) return;
 
             for (int i = 0; i < Transitions.Count; i++)
             {
