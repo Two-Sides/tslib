@@ -8,13 +8,27 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
     {
         public abstract int Priority { get; }
 
-        protected List<Transition> PrioritizedTransitions { get; } = new();
+        public List<Transition> Transitions { get; } = new();
 
         public sealed override void Execute(IStateMachine stateMachine, float deltaTime)
         {
+            // State logic.
             Update(deltaTime);
 
-            TryTransitionToNextState(stateMachine);
+            // Checking transitions.
+
+            if (!ExitCondition()) return;
+
+            for (int i = 0; i < Transitions.Count; i++)
+            {
+                var transition = Transitions[i];
+
+                if (!transition.ConditionMet()) continue;
+
+                stateMachine.TransitionTo(transition.NextState);
+
+                break;
+            }
         }
 
         protected virtual void Update(float deltaTime) { }
@@ -26,30 +40,25 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             if (transition == null) return;
             if (transition.NextState == null) return;
 
-            PrioritizedTransitions.Add(transition);
+            Transitions.Add(transition);
+        }
+
+        public void AddTransitions(ICollection<Transition> transitions, IComparer<Transition> comparer = null)
+        {
+            if (transitions == null) return;
+            if (transitions.Count <= 0) return;
+
+            Transitions.AddRange(transitions);
+
+            if (comparer == null) return;
+            SortTransitions(comparer);
         }
 
         public void SortTransitions(IComparer<Transition> comparer)
         {
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
-            PrioritizedTransitions.Sort(comparer);
-        }
-
-        private void TryTransitionToNextState(IStateMachine hfsm)
-        {
-            if (!ExitCondition()) return;
-
-            for (int i = 0; i < PrioritizedTransitions.Count; i++)
-            {
-                var transition = PrioritizedTransitions[i];
-
-                if (!transition.ConditionMet()) continue;
-
-                hfsm.TransitionTo(transition.NextState);
-
-                break;
-            }
+            Transitions.Sort(comparer);
         }
     }
 }
