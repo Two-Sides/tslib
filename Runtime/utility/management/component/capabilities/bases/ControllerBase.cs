@@ -50,5 +50,31 @@ namespace TSLib.Utility.Management.Component.Capabilities
             Components = null;
         }
 
+        protected virtual void OnEnable()
+        {
+            if (Components == null)
+                throw new ArgumentNullException(nameof(Components));
+
+            for (int i = 0; i < Components.Length; i++)
+            {
+                var component = Components[i];
+                if (component == null) continue;
+                component.Activate();
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (Components == null)
+                throw new ArgumentNullException(nameof(Components));
+
+            for (int i = 0; i < Components.Length; i++)
+            {
+                var component = Components[i];
+                if (component == null) continue;
+                component.Deactivate();
+            }
+        }
+
     }
 }
