@@ -40,9 +40,6 @@ namespace TSLib.Utility.Management.Service
         /// <param name="service">Service instance to register.</param>
         public static void Register<T>(T service) where T : ServiceBaseSo
         {
-            if (!Active) throw new InvalidOperationException(
-                "(disabled) The ServiceLocator is currently disabled. Call SetActive(true) before attempting to use it.");
-
             if (service == null)
                 throw new ArgumentNullException(nameof(service));
 
@@ -65,9 +62,6 @@ namespace TSLib.Utility.Management.Service
         /// </summary>
         public static void Unregister<T>() where T : ServiceBaseSo
         {
-            if (!Active) throw new InvalidOperationException(
-                "(disabled) The ServiceLocator is currently disabled. Call SetActive(true) before attempting to use it.");
-
             _services.Remove(typeof(T));
         }
 
@@ -94,9 +88,6 @@ namespace TSLib.Utility.Management.Service
         /// </summary>
         public static void Clear()
         {
-            if (!Active) throw new InvalidOperationException(
-                "(disabled) The ServiceLocator is currently disabled. Call SetActive(true) before attempting to use it.");
-
             _services.Clear();
         }
     }

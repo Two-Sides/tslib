@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TSLib.Utility.Management.Service;
 using TSLib.Utility.Patterns.Scene.Loading;
 
 namespace TSLib.Utility.Management.Scene.Loading
@@ -34,11 +35,17 @@ namespace TSLib.Utility.Management.Scene.Loading
         /// </param>
         protected sealed override async UniTask Execute(CancellationToken ct)
         {
+            ServiceLocator.SetActive(false);
+
             await PreconfigureEnvironmentAsync(ct);
             await InstantiateAsync(ct);
             await RegisterAsync(ct);
             await InitializeAsync(ct);
-            await Configure(ct);
+
+            ServiceLocator.SetActive(true);
+
+            await BindingAsync(ct);
+            await ConfigureAsync(ct);
             await ExecuteCustomOperationsAsync(ct);
         }
 
@@ -80,6 +87,25 @@ namespace TSLib.Utility.Management.Scene.Loading
         /// </param>
         protected abstract UniTask InitializeAsync(CancellationToken ct);
 
+        /// <summary>
+        /// Executes the binding phase of the lifecycle, where dependencies are
+        /// explicitly linked between already instantiated and initialized objects.
+        ///
+        /// During this stage, objects are expected to resolve and store references
+        /// to other systems, services, or components they depend on. No new instances
+        /// should be created here; the purpose of this phase is strictly to connect
+        /// existing elements together.
+        ///
+        /// This method enables dependency injection at runtime, ensuring that all
+        /// references are wired only after every required dependency is known to
+        /// exist and be fully initialized.
+        /// </summary>
+        /// <param name="ct">
+        /// Cancellation token that is triggered when the owning GameObject is destroyed.
+        /// </param>
+        protected abstract UniTask BindingAsync(CancellationToken ct);
+
+        /// <summary>
         /// Executes configuration logic after all instantiation, registration,
         /// and initialization steps have completed.
         ///
@@ -89,65 +115,20 @@ namespace TSLib.Utility.Management.Scene.Loading
         /// <param name="ct">
         /// Cancellation token that is triggered when the owning GameObject is destroyed.
         /// </param>
-        protected abstract UniTask Configure(CancellationToken ct);
+        protected abstract UniTask ConfigureAsync(CancellationToken ct);
 
         /// <summary>
         /// Executes optional custom operations that extend or finalize the
-        /// initialization workflow.
+        /// scene initialization workflow.
         ///
         /// This phase is intended for logic that does not naturally belong to
         /// instantiation, registration, initialization, or configuration, but
         /// must run once all previous steps have completed.
-        ///
-        /// By default, this method delegates execution to the synchronous
-        /// <see cref="ExecuteCustomOperations"/> implementation and returns a
-        /// completed task.
-        ///
-        /// Override this method to implement asynchronous continuation logic.
-        /// Alternatively, override <see cref="ExecuteCustomOperations"/> to
-        /// implement synchronous behavior when no awaiting is required.
         /// </summary>
-        /// <example>
-        /// If all GameObjects were instantiated in an inactive state (recommended),
-        /// they can be activated sequentially by overriding
-        /// <see cref="ExecuteCustomOperations"/> or asynchronously by overriding
-        /// this method.
-        /// </example>
         /// <param name="ct">
         /// Cancellation token that is triggered when the owning GameObject is destroyed.
         /// </param>
-        protected virtual UniTask ExecuteCustomOperationsAsync(CancellationToken ct)
-        {
-            ExecuteCustomOperations(ct);
-            return UniTask.CompletedTask;
-        }
-
-        /// <summary>
-        /// Executes optional synchronous custom operations at the end of the
-        /// initialization workflow.
-        ///
-        /// This method is intended for immediate, non-blocking logic that does
-        /// not require awaiting asynchronous operations.
-        ///
-        /// Override this method when custom behavior can be expressed
-        /// synchronously. For asynchronous behavior, override
-        /// <see cref="ExecuteCustomOperationsAsync"/> instead.
-        ///
-        /// Implementations should observe the provided <see cref="CancellationToken"/> 
-        /// to avoid performing work after cancellation has been requested.
-        /// </summary>
-        /// <example>
-        /// You can handle cancellation like this:
-        /// <code>
-        /// ct.ThrowIfCancellationRequested();
-        /// // or
-        /// if (ct.IsCancellationRequested) return;
-        /// </code>
-        /// </example>
-        /// <param name="ct">
-        /// Cancellation token that is triggered when the owning GameObject is destroyed.
-        /// </param>
-        protected virtual void ExecuteCustomOperations(CancellationToken ct) { }
+        protected virtual UniTask ExecuteCustomOperationsAsync(CancellationToken ct) => UniTask.CompletedTask;
     }
 }
 
