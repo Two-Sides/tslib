@@ -21,7 +21,7 @@ namespace TSLib.Utility.Management.Service
         /// Indicates whether the ServiceLocator is enabled.
         /// When this value is true, the use of the ServiceLocator is allowed.
         /// </summary>
-        public static bool Active { get; private set; } = false;
+        //public static bool Active { get; private set; } = false;
 
         /// <summary>
         /// Sets the activation state of the ServiceLocator.
@@ -30,7 +30,7 @@ namespace TSLib.Utility.Management.Service
         /// Determines the ServiceLocator state:
         /// true enables it, false disables it.
         /// </param>
-        public static void SetActive(bool active) => Active = active;
+        //public static void SetActive(bool active) => Active = active;
 
         /// <summary>
         /// Registers a service instance using its concrete runtime type as the key.
@@ -72,8 +72,8 @@ namespace TSLib.Utility.Management.Service
         /// <returns>The registered service instance, or <c>null</c> if not found.</returns>
         public static T Get<T>() where T : ServiceBaseSo
         {
-            if (!Active) throw new InvalidOperationException(
-                "(disabled) The ServiceLocator is currently disabled. Call SetActive(true) before attempting to use it.");
+            // (!Active) throw new InvalidOperationException(
+            //    "(disabled) The ServiceLocator is currently disabled. Call SetActive(true) before attempting to use it.");
 
             var type = typeof(T);
             if (_services.TryGetValue(type, out var service))

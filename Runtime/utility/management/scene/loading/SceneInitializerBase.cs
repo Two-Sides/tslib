@@ -35,14 +35,14 @@ namespace TSLib.Utility.Management.Scene.Loading
         /// </param>
         protected sealed override async UniTask Execute(CancellationToken ct)
         {
-            ServiceLocator.SetActive(false);
+            //ServiceLocator.SetActive(false);
 
             await PreconfigureEnvironmentAsync(ct);
             await InstantiateAsync(ct);
             await RegisterAsync(ct);
             await InitializeAsync(ct);
 
-            ServiceLocator.SetActive(true);
+            //ServiceLocator.SetActive(true);
 
             await BindingAsync(ct);
             await ConfigureAsync(ct);
