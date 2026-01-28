@@ -42,11 +42,11 @@ namespace TSLib.Utility.Management.Scene.Loading
 
             await PreconfigureEnvironmentAsync(ct);
             await InstantiateAsync(ct);
-            await RegisterAsync(ct);
             await InitializeAsync(ct);
 
             serviceLocator.SetActive(true);
 
+            await RegisterAsync(ct);
             await BindingAsync(ct);
             await ConfigureAsync(ct);
             await ExecuteCustomOperationsAsync(ct);
