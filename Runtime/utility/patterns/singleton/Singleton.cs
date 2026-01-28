@@ -1,7 +1,7 @@
 using TSLib.Utility.Management.Component.Capabilities;
 using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour, IInitializable where T : MonoBehaviour
+public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     protected virtual bool Persistent => true;
     protected static T instance;
@@ -21,7 +21,7 @@ public abstract class Singleton<T> : MonoBehaviour, IInitializable where T : Mon
         }
     }
 
-    public void Initialize()
+    protected virtual void Awake()
     {
         if (!Application.isPlaying) return;
 
@@ -47,11 +47,4 @@ public abstract class Singleton<T> : MonoBehaviour, IInitializable where T : Mon
     protected virtual void OnApplicationQuit() => _isQuitting = true;
 
     protected virtual void OnSingletonAwake() { }
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ResetStatics()
-    {
-        instance = null;
-        _isQuitting = false;
-    }
 }
