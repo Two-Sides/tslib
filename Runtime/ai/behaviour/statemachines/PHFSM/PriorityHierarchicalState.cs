@@ -17,7 +17,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 
         // should be injected
         public VoidChannelSo OnEnter { private get; set; }
-        public VoidChannelSo OnUpdate { private get; set; }
+        public VoidChannelSo OnExecute { private get; set; }
         public VoidChannelSo OnExit { private get; set; }
 
         public VoidChannelSo OnEnterCondition { private get; set; }
