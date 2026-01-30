@@ -29,7 +29,11 @@ namespace TSLib.Utility.Patterns.Scene.Loading
 
             await BindingAsync(SceneCtx, AppCtx, ct);
             await ConfigureAsync(ct);
+
+            // optional
             await ExecuteCustomOperationsAsync(ct);
+            await LoadSceneAdditiveAsync(ct);
+            await UnLoadSceneAdditiveAsync(ct);
 
             if (onSceneLoaded == null) return;
             onSceneLoaded.TriggerEvent(gameObject.scene);
