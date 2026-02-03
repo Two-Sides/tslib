@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace TSLib.Utility.Management.Managers
 {
-    public abstract class UtilityContainerBase
+    public class UtilityContainer
     {
-        private readonly Dictionary<Type, UtilityBase> _utilities = new();
+        private readonly Dictionary<Type, IUtility> _utilities = new();
 
-        public void Register(UtilityBase utility)
+        public void Register(IUtility utility)
         {
             if (utility == null)
                 throw new ArgumentNullException(nameof(utility));
@@ -30,7 +30,7 @@ namespace TSLib.Utility.Management.Managers
             _utilities.Remove(typeof(T));
         }
 
-        public T Get<T>() where T : UtilityBase
+        public T Get<T>() where T : IUtility
         {
             if (_utilities.TryGetValue(typeof(T), out var utility))
                 return (T)utility;
