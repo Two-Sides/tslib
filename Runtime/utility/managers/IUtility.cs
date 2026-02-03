@@ -1,8 +1,9 @@
-using TSLib.Utility.Management.Component.Capabilities;
+using TSLib.Utility.Patterns.Scene.Contexts;
 
 namespace TSLib.Utility.Management.Managers
 {
-    public interface IUtility : IInitializable, IConfigurable, IActivatable
+    public interface IUtility
     {
+        public void Register(AppCtx appCtx);
     }
 }
