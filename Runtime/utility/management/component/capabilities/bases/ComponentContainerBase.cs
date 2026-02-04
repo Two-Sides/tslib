@@ -53,9 +53,7 @@ namespace TSLib.Utility.Management.Component.Capabilities
             if (components == null)
                 throw new ArgumentNullException(nameof(components));
 
-            if (components.Length == 0)
-                throw new InvalidOperationException(
-                    "(empty) There is no components registered.");
+            if (components.Length == 0) return;
 
             for (int i = 0; i < components.Length; i++)
             {
