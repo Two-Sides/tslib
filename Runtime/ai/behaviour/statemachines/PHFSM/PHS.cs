@@ -14,6 +14,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public bool IsInterruptible { get; set; }
 
         public List<Transition> Transitions { get; }
+        public Transition SelfTransition { get; private set; }
 
         public VoidChannel_So OnEnter { private get; set; }
         public VoidChannel_So OnExecute { private get; set; }
@@ -23,11 +24,11 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public VoidChannel_So OnExitCondition { private get; set; }
 
         private IComparer<Transition> _comparer;
-        private Transition _selfTransition;
 
-        protected PHS(PHSData_So data, Transition selfTransition, IComparer<Transition> comparer, List<Transition> transitions)
+
+        protected PHS(PHSData_So data, IComparer<Transition> comparer, List<Transition> transitions)
         {
-            SetData(data, selfTransition, comparer);
+            SetData(data, comparer);
 
             if (transitions == null) throw new ArgumentNullException(nameof(transitions));
             if (transitions.Count == 0) throw new InvalidOperationException(
@@ -66,7 +67,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
                 if (stateMachine.IsSameState(nextTransition.NextState, this)) continue;
 
                 bool isInterruption = !exitCondition && IsInterruptible;
-                if (isInterruption && _selfTransition != GetHighestPriority(_selfTransition, nextTransition))
+                if (isInterruption && SelfTransition != GetHighestPriority(SelfTransition, nextTransition))
                     break;
 
                 stateMachine.TransitionTo(nextTransition.NextState);
@@ -100,11 +101,11 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             return t2;
         }
 
-        private void SetData(PHSData_So data, Transition selfTransition, IComparer<Transition> comparer)
+        private void SetData(PHSData_So data, IComparer<Transition> comparer)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
-            if (selfTransition == null) throw new ArgumentNullException(nameof(selfTransition));
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+
 
             Priority = data.Priority;
             IsInterruptible = data.IsInterruptible;
@@ -116,7 +117,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             OnEnterCondition = data.OnEnterCondition ? data.OnEnterCondition : null;
             OnExitCondition = data.OnExitCondition ? data.OnExitCondition : null;
 
-            _selfTransition = selfTransition;
+            SelfTransition = new Transition(this);
             _comparer = comparer;
         }
     }
