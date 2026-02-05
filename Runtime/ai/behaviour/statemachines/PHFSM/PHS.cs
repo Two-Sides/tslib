@@ -13,7 +13,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public int Priority { get; set; }
         public bool IsInterruptible { get; set; }
 
-        public List<Transition> Transitions { get; }
+        public List<Transition> Transitions { get; private set; }
         public Transition SelfTransition { get; private set; }
 
         public VoidChannel_So OnEnter { private get; set; }
@@ -23,19 +23,27 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public VoidChannel_So OnEnterCondition { private get; set; }
         public VoidChannel_So OnExitCondition { private get; set; }
 
-        private IComparer<Transition> _comparer;
+        private readonly IComparer<Transition> _comparer;
 
 
-        protected PHS(PHSData_So data, IComparer<Transition> comparer, List<Transition> transitions)
+        protected PHS(PHSData_So data, IComparer<Transition> comparer)
         {
-            SetData(data, comparer);
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
-            if (transitions == null) throw new ArgumentNullException(nameof(transitions));
-            if (transitions.Count == 0) throw new InvalidOperationException(
-                "(empty) no transitions to set.");
 
-            Transitions = transitions;
-            Transitions.Sort(_comparer);
+            Priority = data.Priority;
+            IsInterruptible = data.IsInterruptible;
+
+            OnEnter = data.OnEnter ? data.OnEnter : null;
+            OnExecute = data.OnExecute ? data.OnExecute : null;
+            OnExit = data.OnExit ? data.OnExit : null;
+
+            OnEnterCondition = data.OnEnterCondition ? data.OnEnterCondition : null;
+            OnExitCondition = data.OnExitCondition ? data.OnExitCondition : null;
+
+            SelfTransition = new Transition(this);
+            _comparer = comparer;
         }
 
 
@@ -88,6 +96,16 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             if (OnExitCondition != null) OnExitCondition.Unsubscribe(SetExitEnabled);
         }
 
+        public void SetTransitions(List<Transition> transitions)
+        {
+            if (transitions == null) throw new ArgumentNullException(nameof(transitions));
+            if (transitions.Count == 0) throw new InvalidOperationException(
+                "(empty) no transitions to set.");
+
+            Transitions = transitions;
+            Transitions.Sort(_comparer);
+        }
+
         protected virtual void EnterLogic() { }
         protected virtual void ExecuteLogic(float deltaTime) { }
         protected virtual void ExitLogic() { }
@@ -99,26 +117,6 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         {
             if (_comparer.Compare(t1, t2) <= 0) return t1;
             return t2;
-        }
-
-        private void SetData(PHSData_So data, IComparer<Transition> comparer)
-        {
-            if (data == null) throw new ArgumentNullException(nameof(data));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
-
-            Priority = data.Priority;
-            IsInterruptible = data.IsInterruptible;
-
-            OnEnter = data.OnEnter ? data.OnEnter : null;
-            OnExecute = data.OnExecute ? data.OnExecute : null;
-            OnExit = data.OnExit ? data.OnExit : null;
-
-            OnEnterCondition = data.OnEnterCondition ? data.OnEnterCondition : null;
-            OnExitCondition = data.OnExitCondition ? data.OnExitCondition : null;
-
-            SelfTransition = new Transition(this);
-            _comparer = comparer;
         }
     }
 }
