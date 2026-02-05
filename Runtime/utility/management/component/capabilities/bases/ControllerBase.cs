@@ -13,8 +13,8 @@ namespace TSLib.Utility.Management.Component.Capabilities
 
         public override void Initialize()
         {
-            if (Components == null)
-                throw new ArgumentNullException(nameof(Components));
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
 
             for (int i = 0; i < Components.Length; i++)
             {
@@ -26,8 +26,8 @@ namespace TSLib.Utility.Management.Component.Capabilities
 
         public override void Bind(SceneCtx sceneCtx, AppCtx appCtx)
         {
-            if (Components == null)
-                throw new ArgumentNullException(nameof(Components));
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
 
             for (int i = 0; i < Components.Length; i++)
             {
@@ -39,8 +39,8 @@ namespace TSLib.Utility.Management.Component.Capabilities
 
         public override void Configure()
         {
-            if (Components == null)
-                throw new ArgumentNullException(nameof(Components));
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
 
             for (int i = 0; i < Components.Length; i++)
             {
@@ -52,22 +52,23 @@ namespace TSLib.Utility.Management.Component.Capabilities
 
         public override void Deconfigure()
         {
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
+
             for (int i = 0; i < Components.Length; i++)
             {
                 var component = Components[i];
                 if (component == null) continue;
-
                 component.Deconfigure();
                 Components[i] = null;
             }
-
             Components = null;
         }
 
         protected virtual void OnEnable()
         {
-            if (Components == null)
-                throw new ArgumentNullException(nameof(Components));
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
 
             for (int i = 0; i < Components.Length; i++)
             {
@@ -79,8 +80,8 @@ namespace TSLib.Utility.Management.Component.Capabilities
 
         protected virtual void OnDisable()
         {
-            if (Components == null)
-                throw new ArgumentNullException(nameof(Components));
+            if (Components == null) throw new InvalidOperationException(
+                "(missing) components storage uninitialized.");
 
             for (int i = 0; i < Components.Length; i++)
             {

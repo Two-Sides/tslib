@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TSLib.Utility.Patterns.EventChannels.NonPrimitive;
@@ -8,13 +9,16 @@ namespace TSLib.Utility.Patterns.Scene.Loading
 {
     public abstract class SceneEntryBase : MonoBehaviour
     {
-        [SerializeField] private SceneChannelSo onSceneLoaded;
+        [SerializeField] private SceneChannel_So onSceneLoaded;
 
         protected AppCtx AppCtx;
         protected SceneCtx SceneCtx;
 
         public async UniTask LoadAsync(AppCtx appCtx, CancellationToken ct)
         {
+            if (appCtx == null)
+                throw new ArgumentNullException(nameof(appCtx));
+
             AppCtx = appCtx;
             SceneCtx = new SceneCtx();
 

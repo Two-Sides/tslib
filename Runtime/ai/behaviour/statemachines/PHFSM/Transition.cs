@@ -1,16 +1,17 @@
 using System;
+using System.Collections;
 
 namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 {
     public class Transition
     {
-        public PriorityHierarchicalState NextState { get; }
+        public PHS NextState { get; }
 
-        public Transition(PriorityHierarchicalState nextState)
+        public Transition(PHS nextState)
         {
             NextState = nextState ?? throw new ArgumentNullException(nameof(nextState));
         }
 
-        public bool ConditionMet() => NextState.EnterCondition();
+        public bool EnterCondition() => NextState.EnterCondition;
     }
 }

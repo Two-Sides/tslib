@@ -1,29 +1,32 @@
 using System;
 using UnityEngine;
 
-namespace TSLib.Utility.Patterns.EventChannels
+namespace TSLib.Utility.Patterns.EventChannels.Primitive
 {
-    public abstract class SingleActionChannelBaseSo<T> : ScriptableObject
+    [CreateAssetMenu(
+        fileName = "VoidChannel",
+        menuName = "Event Channels/Primitive/Void Channel"
+    )]
+    public class VoidChannel_So : ScriptableObject
     {
         /// <summary>
         /// Channel event.
         /// </summary>
-        private event Action<T> Event;
+        private event Action Event;
 
         /// <summary>
         /// Invokes the event.
         /// </summary>
-        /// <param name="param">Generic type for the action</param>
-        public void TriggerEvent(T param)
+        public void TriggerEvent()
         {
-            Event?.Invoke(param);
+            Event?.Invoke();
         }
 
         /// <summary>
         /// Subscription to the event.
         /// </summary>
         /// <param name="subscriber">Action to subscribe</param>
-        public void Subscribe(Action<T> subscriber)
+        public void Subscribe(Action subscriber)
         {
             Event += subscriber;
         }
@@ -32,11 +35,10 @@ namespace TSLib.Utility.Patterns.EventChannels
         /// Unsubscribe action from event.
         /// </summary>
         /// <param name="subscriber">Action to unsubscribe</param>
-        public void Unsubscribe(Action<T> subscriber)
+        public void Unsubscribe(Action subscriber)
         {
             Event -= subscriber;
         }
     }
 }
-
 

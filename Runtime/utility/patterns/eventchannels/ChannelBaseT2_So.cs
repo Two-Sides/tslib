@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace TSLib.Utility.Patterns.EventChannels
 {
-    public abstract class DoubleActionChannelBaseSo<T1, T2> : ScriptableObject
+    public abstract class ChannelBaseT2_So<T1, T2> : ScriptableObject
     {
         /// <summary>
         /// Channel event.

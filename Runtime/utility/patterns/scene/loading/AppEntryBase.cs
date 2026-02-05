@@ -10,7 +10,7 @@ namespace TSLib.Utility.Patterns.Scene.Loading
 {
     public abstract class AppEntryBase : MonoBehaviour
     {
-        [SerializeField] private SceneChannelSo onAppLoaded;
+        [SerializeField] private SceneChannel_So onAppLoaded;
 
         public AppCtx Context { get; protected set; }
 
