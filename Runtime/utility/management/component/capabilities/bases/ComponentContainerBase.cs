@@ -73,9 +73,6 @@ namespace TSLib.Utility.Management.Component.Capabilities
         {
             if (components == null) throw new ArgumentNullException(nameof(components));
 
-            if (components.Length == 0) throw new InvalidOperationException(
-                    "(empty) no components for registration.");
-
             for (int i = 0; i < components.Length; i++)
             {
                 RegisterComponent(components[i]);
@@ -90,7 +87,7 @@ namespace TSLib.Utility.Management.Component.Capabilities
             if (components == null) throw new ArgumentNullException(nameof(components));
 
             if (components.Length == 0) throw new InvalidOperationException(
-                    "(empty) no components for registration.");
+                    "(empty) no components for unregistration.");
 
             bool allRemoved = true;
 
