@@ -45,6 +45,9 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 
             SelfTransition = new Transition(this);
             _comparer = comparer;
+
+            if (OnEnterCondition != null) OnEnterCondition.Subscribe(EnableEnter);
+            if (OnExitCondition != null) OnExitCondition.Subscribe(EnableExit);
         }
 
 
@@ -53,9 +56,6 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             EnterCondition = false;
 
             if (OnEnter != null) OnEnter.TriggerEvent();
-
-            if (OnEnterCondition != null) OnEnterCondition.Subscribe(EnableEnter);
-            if (OnExitCondition != null) OnExitCondition.Subscribe(EnableExit);
 
             EnterLogic();
         }
@@ -92,9 +92,6 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             ExitLogic();
 
             if (OnExit != null) OnExit.TriggerEvent();
-
-            if (OnEnterCondition != null) OnEnterCondition.Unsubscribe(EnableEnter);
-            if (OnExitCondition != null) OnExitCondition.Unsubscribe(EnableExit);
         }
 
         public void SetTransitions(List<Transition> transitions)
@@ -105,6 +102,12 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 
             Transitions = transitions;
             Transitions.Sort(_comparer);
+        }
+
+        public void UnsubscribeConditionEvents()
+        {
+            if (OnEnterCondition != null) OnEnterCondition.Unsubscribe(EnableEnter);
+            if (OnExitCondition != null) OnExitCondition.Unsubscribe(EnableExit);
         }
 
         protected virtual void EnterLogic() { }
