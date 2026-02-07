@@ -11,7 +11,6 @@ namespace TSLib.Utility.Management.Component.Capabilities
         public virtual void Bind(SceneCtx sceneCtx, AppCtx appCtx) { }
         public virtual void Configure() { }
         public virtual void Activate() { }
-        public virtual void Deconfigure() { }
         public virtual void Deactivate() { }
     }
 }

@@ -50,21 +50,6 @@ namespace TSLib.Utility.Management.Component.Capabilities
             }
         }
 
-        public override void Deconfigure()
-        {
-            if (Components == null) throw new InvalidOperationException(
-                "(missing) components storage uninitialized.");
-
-            for (int i = 0; i < Components.Length; i++)
-            {
-                var component = Components[i];
-                if (component == null) continue;
-                component.Deconfigure();
-                Components[i] = null;
-            }
-            Components = null;
-        }
-
         protected virtual void OnEnable()
         {
             if (Components == null) throw new InvalidOperationException(
@@ -90,6 +75,5 @@ namespace TSLib.Utility.Management.Component.Capabilities
                 component.Deactivate();
             }
         }
-
     }
 }
