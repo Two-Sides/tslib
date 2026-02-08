@@ -16,10 +16,7 @@ namespace TSLib.Utility.Patterns.Scene.Loading
 
         public async UniTask LoadAsync(AppCtx appCtx, CancellationToken ct)
         {
-            if (appCtx == null)
-                throw new ArgumentNullException(nameof(appCtx));
-
-            AppCtx = appCtx;
+            AppCtx = appCtx ?? throw new ArgumentNullException(nameof(appCtx));
             SceneCtx = new SceneCtx();
 
             SceneCtx.SetActive(false);
