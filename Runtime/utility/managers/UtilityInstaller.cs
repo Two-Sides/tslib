@@ -4,21 +4,23 @@ using UnityEngine;
 
 namespace TSLib.Utility.Management.Managers
 {
-    public class UtilityDistributor : MonoBehaviour
+    public class UtilityInstaller : MonoBehaviour
     {
         [SerializeField] protected IUtility[] Utilities;
 
-        public virtual void RegisterUtilities(AppCtx appCtx)
+        public virtual void RegisterUtilities(UtilityCtx utilityCtx)
         {
-            if (appCtx == null) throw new ArgumentNullException(nameof(appCtx));
+            if (utilityCtx == null) throw new ArgumentNullException(nameof(utilityCtx));
 
             if (Utilities == null) throw new InvalidOperationException(
                 "(missing) utilities storage uninitialized.");
 
             for (int i = 0; i < Utilities.Length; i++)
             {
-                appCtx.UtilityCtx.Register(Utilities[i]);
+                utilityCtx.Register(Utilities[i]);
             }
+            Utilities = null;
+            Destroy(gameObject);
         }
     }
 }

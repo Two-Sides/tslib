@@ -79,7 +79,7 @@ namespace TSLib.Utility.Management.Component.Capabilities
         protected override void OnDestroy()
         {
             Unregister();
-            Destroy();
+            Deconfigure();
         }
     }
 }

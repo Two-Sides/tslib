@@ -10,10 +10,11 @@ namespace TSLib.Utility.Management.Component.Capabilities
         public virtual void Initialize() { }
         public virtual void Bind(SceneCtx sceneCtx, AppCtx appCtx) { }
         public virtual void Configure() { }
+        public virtual void Deconfigure() { }
         public virtual void Activate() { }
         public virtual void Deactivate() { }
-        protected virtual void Destroy() { }
 
-        protected virtual void OnDestroy() => Destroy();
+
+        protected virtual void OnDestroy() => Deconfigure();
     }
 }
