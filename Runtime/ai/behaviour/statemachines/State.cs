@@ -8,8 +8,8 @@ namespace TSLib.AI.Behaviour.StateMachines
     /// </summary>
     public abstract class State
     {
-        public SceneCtx SceneCtx { private get; set; }
-        public AppCtx AppCtx { private get; set; }
+        public SceneCtx SceneCtx { protected get; set; }
+        public AppCtx AppCtx { protected get; set; }
 
         /// <summary>
         /// Called once when the FSM enters this state.
