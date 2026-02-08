@@ -3,22 +3,15 @@ using System.Collections.Generic;
 
 namespace TSLib.AI.Behaviour.StateMachines.HFSM
 {
-    public class HFSM : IStateMachine
+    public class HFSM : StateMachineBase
     {
-        public bool Started { get; private set; }
-        public bool Running { get; private set; }
         public HierarchicalState Root { get; private set; }
         public HierarchicalState CurrentLeaf { get; private set; } // lower active state
         public HierarchicalState PreviousLeaf { get; private set; } // previous lower active state
         public List<HierarchicalState> CurrentPath { get; private set; } // reversed active path
-        public IEqualityComparer<State> StateComparer { get; private set; }
 
-        public HFSM(
-            HierarchicalState root,
-            HierarchicalState defaultLeaf,
-            int maxDepth = 10,
-            IEqualityComparer<State> stateComparer = null
-            )
+        public HFSM(HierarchicalState root, HierarchicalState defaultLeaf,
+            IEqualityComparer<State> stateComparer = null, int maxDepth = 10)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
             CurrentLeaf = defaultLeaf ?? throw new ArgumentNullException(nameof(defaultLeaf));
@@ -32,56 +25,18 @@ namespace TSLib.AI.Behaviour.StateMachines.HFSM
             SetCurrentPath(defaultLeaf);
         }
 
-        public void Start(bool doEnter = true)
-        {
-            if (Running)
-                throw new InvalidOperationException(
-                    $"(running) The HFSM must be stopped before starting it again."
-                );
-
-            if (!doEnter)
-            {
-                Started = true;
-                return;
-            }
-
-            for (int i = CurrentPath.Count - 1; i >= 0; i--)
-            {
-                var state = CurrentPath[i];
-                state?.Enter();
-            }
-
-            Started = true;
-        }
-
-        public void Run()
-        {
-            if (!Started)
-                throw new InvalidOperationException(
-                    $"(not started) Before running the HFSM must be started."
-                );
-
-            Running = true;
-        }
-
-        public void Stop()
-        {
-            Started = false;
-            Running = false;
-        }
-
-        public void Execute(float deltaTime)
+        public override void Execute(float deltaTime)
         {
             if (!Running || !Started) return;
 
             for (int i = CurrentPath.Count - 1; i >= 0; i--)
             {
                 var state = CurrentPath[i];
-                state?.Execute(this, deltaTime);
+                state.Execute(this, deltaTime);
             }
         }
 
-        public void TransitionTo(State newLeaf, bool doEnter = true, bool doExit = true, bool allowSameState = false)
+        public override void TransitionTo(State newLeaf, bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
             if (newLeaf == null)
                 throw new ArgumentNullException(nameof(newLeaf));
@@ -123,19 +78,6 @@ namespace TSLib.AI.Behaviour.StateMachines.HFSM
             Run(); // continues running but using the new path
         }
 
-        public void RevertToPrevious(bool doEnter = true, bool doExit = true, bool allowSameState = false)
-        {
-            if (PreviousLeaf == null)
-                throw new ArgumentNullException(nameof(PreviousLeaf));
-
-            TransitionTo(PreviousLeaf, doEnter, doExit, allowSameState);
-        }
-
-        public bool IsSameState(State s1, State s2)
-        {
-            return StateComparer.Equals(s1, s2);
-        }
-
         private HierarchicalState LCA(HierarchicalState node1, HierarchicalState node2)
         {
             int depthNode1 = Depth(node1);
@@ -153,7 +95,7 @@ namespace TSLib.AI.Behaviour.StateMachines.HFSM
                 depthNode2--;
             }
 
-            while (node1 != node2)
+            while (!IsSameState(node1, node2))
             {
                 node1 = node1.Ancestor;
                 node2 = node2.Ancestor;
@@ -171,23 +113,36 @@ namespace TSLib.AI.Behaviour.StateMachines.HFSM
                 node = node.Ancestor;
                 d++;
             }
-
             return d;
         }
 
         private void SetCurrentPath(HierarchicalState leaf)
         {
-            if (CurrentPath == null)
-                throw new ArgumentNullException(nameof(CurrentPath));
-
-            var state = leaf;
             CurrentPath.Clear();
 
-            while (state != Root)
+            var state = leaf;
+            while (!IsSameState(state, Root))
             {
                 CurrentPath.Add(state); // added from bottom to root
                 state = state.Ancestor; // next node in path
             }
+        }
+
+        public override void Start(bool doEnter = true)
+        {
+            if (Running)
+                throw new InvalidOperationException(
+                    $"(running) The State Machine must be stopped before starting it again.");
+
+            if (doEnter)
+            {
+                for (int i = CurrentPath.Count - 1; i >= 0; i--)
+                {
+                    var state = CurrentPath[i];
+                    state.Enter();
+                }
+            }
+            Started = true;
         }
     }
 }

@@ -7,37 +7,8 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
     /// Generic preemptive finite state machine (PFSM) implementation that manages state transitions
     /// and preemptive (interrupting) logic.
     /// </summary>
-    public class PFSM : IStateMachine
+    public class PFSM : StateMachineBase
     {
-        /// <summary>
-        /// Equality comparer used to determine whether two states should be considered the same.
-        /// This allows custom comparison logic (by reference, by type, by ID, etc.).
-        /// </summary>
-        /// <remarks>
-        /// By default, <see cref="EqualityComparer{T}.Default"/> is used, which results in
-        /// reference-based comparison unless <see cref="object.Equals(object)"/>  is overrided.
-        /// </remarks>
-        /// <example>
-        /// Example of a comparer that considers two states equal if they are of the same runtime type:
-        /// <code>
-        /// public sealed class StateTypeComparer : IEqualityComparer&lt;State&gt;
-        /// {
-        ///     public bool Equals(State; x, State y)
-        ///     {
-        ///         if (ReferenceEquals(x, y)) return true;
-        ///         if (x is null || y is null) return false;
-        ///         return x.GetType() == y.GetType();
-        ///     }
-        ///
-        ///     public int GetHashCode(State obj)
-        ///     {
-        ///         return obj?.GetType().GetHashCode() ?? 0;
-        ///     }
-        /// }
-        /// </code>
-        /// </example>
-        public IEqualityComparer<State> StateComparer { get; private set; }
-
         /// <summary>
         /// The currently active state.
         /// </summary>
@@ -83,20 +54,13 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="currentState"/> or <paramref name="preemptiveState"/> is <c>null</c>.
         /// </exception>
-        public PFSM(
-            State currentState,
-            PreemptiveState preemptiveState,
-            State previousState = null,
-            IEqualityComparer<State> stateComparer = null
-            )
+        public PFSM(State currentState, PreemptiveState preemptiveState,
+            IEqualityComparer<State> stateComparer = null)
         {
             CurrentState = currentState ?? throw new ArgumentNullException(nameof(currentState));
             PreemptiveState = preemptiveState ?? throw new ArgumentNullException(nameof(preemptiveState));
-            PreviousState = previousState ?? currentState;
+            PreviousState = null;
             StateComparer = stateComparer ?? EqualityComparer<State>.Default;
-
-            // Enters the initial state immediately upon creation.
-            CurrentState.Enter();
         }
 
         /// <summary>
@@ -105,8 +69,10 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
         /// the execution of the previous state is skipped for this update cycle.
         /// The current state is updated in second place.
         /// </summary>
-        public void Execute(float deltaTime)
+        public override void Execute(float deltaTime)
         {
+            if (!Running || !Started) return;
+
             var before = CurrentState;
 
             PreemptiveState?.EvaluatePreemption(this);
@@ -134,7 +100,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="newState"/> is <c>null</c>.
         /// </exception>
-        public void TransitionTo(State newState, bool doEnter = true, bool doExit = true, bool allowSameState = false)
+        public override void TransitionTo(State newState, bool doEnter = true, bool doExit = true, bool allowSameState = false)
         {
             if (newState == null)
                 throw new ArgumentNullException(nameof(newState));
@@ -168,35 +134,15 @@ namespace TSLib.AI.Behaviour.StateMachines.PFSM
             PreemptiveState = newPreempState;
         }
 
-        /// <summary>
-        /// Reverts the PFSM to the previously active state.
-        /// </summary>
-        /// <param name="allowSameState">
-        /// If <c>true</c>, allows re-entering the same state if the previous
-        /// and current states are considered equal.
-        /// </param>
-        /// /// <param name="doEnter">
-        /// If <c>true</c>, executes <see cref="State.Enter"/> while transitioning.
-        /// </param>
-        /// <param name="doExit">
-        /// If <c>true</c>, executes <see cref="State.Exit"/> while transitioning.
-        /// </param>
-        public void RevertToPrevious(bool doEnter = true, bool doExit = true, bool allowSameState = false)
+        public override void Start(bool doEnter = true)
         {
-            TransitionTo(PreviousState, doEnter, doExit, allowSameState);
-        }
+            if (Running)
+                throw new InvalidOperationException(
+                    $"(running) The HFSM must be stopped before starting it again.");
 
-        /// <summary>
-        /// Determines whether two states are considered the same according to the configured comparer.
-        /// </summary>
-        /// <param name="s1">The first state.</param>
-        /// <param name="s2">The second state.</param>
-        /// <returns>
-        /// <c>true</c> if the states are considered equal; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsSameState(State s1, State s2)
-        {
-            return StateComparer.Equals(s1, s2);
+            if (doEnter) CurrentState.Enter();
+
+            Started = true;
         }
     }
 }

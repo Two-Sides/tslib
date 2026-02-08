@@ -11,12 +11,10 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 
         public void SetNextState(PHS nextState)
         {
-            if (nextState == null) throw new ArgumentNullException(nameof(nextState));
-
             if (NextState != null) throw new InvalidOperationException(
-                "(invalid) NextState is already assinged.");
+                "(invalid) NextState is already assigned.");
 
-            NextState = nextState;
+            NextState = nextState ?? throw new ArgumentNullException(nameof(nextState));
         }
 
         public bool EnterCondition()

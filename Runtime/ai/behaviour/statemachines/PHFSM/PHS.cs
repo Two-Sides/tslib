@@ -8,19 +8,18 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
 {
     public abstract class PHS : HierarchicalState
     {
-        public bool EnterCondition { get; private set; } = false;
-        public bool ExitCondition { get; private set; } = false;
-
         public int Priority { get; set; }
-        public bool IsInterruptible { get; set; }
+        public bool IsInterruptible { private get; set; }
 
-        public List<Transition> Transitions { get; private set; }
+        public List<Transition> TransitionList { get; private set; }
         public Transition SelfTransition { get; private set; }
 
         public VoidChannel_So OnEnter { private get; set; }
         public VoidChannel_So OnExecute { private get; set; }
         public VoidChannel_So OnExit { private get; set; }
 
+        public bool EnterCondition { get; private set; } = false;
+        public bool ExitCondition { get; private set; } = false;
         public VoidChannel_So OnEnterCondition { private get; set; }
         public VoidChannel_So OnExitCondition { private get; set; }
 
@@ -30,8 +29,6 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         protected PHS(PHSData_So data, IComparer<Transition> comparer)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
-            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
-
 
             Priority = data.Priority;
             IsInterruptible = data.IsInterruptible;
@@ -44,7 +41,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
             OnExitCondition = data.OnExitCondition ? data.OnExitCondition : null;
 
             SelfTransition = new Transition(this);
-            _comparer = comparer;
+            _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
 
             if (OnEnterCondition != null) OnEnterCondition.Subscribe(EnableEnter);
             if (OnExitCondition != null) OnExitCondition.Subscribe(EnableExit);
@@ -54,30 +51,30 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public sealed override void Enter()
         {
             EnterCondition = false;
-
             if (OnEnter != null) OnEnter.TriggerEvent();
-
             EnterLogic();
         }
 
-        public sealed override void Execute(IStateMachine stateMachine, float deltaTime)
+        public sealed override void Execute(StateMachineBase stateMachine, float deltaTime)
         {
-            ExecuteLogic(deltaTime);
+            ExecuteLogic(stateMachine, deltaTime);
 
             // Transition checker
             if (!ExitCondition && !IsInterruptible) return;
 
-            for (int i = 0; i < Transitions.Count; i++)
+            for (int i = 0; i < TransitionList.Count; i++)
             {
-                var nextTransition = Transitions[i];
+                var nextTransition = TransitionList[i];
                 if (nextTransition == null) continue;
 
                 if (!nextTransition.EnterCondition()) continue;
                 if (stateMachine.IsSameState(nextTransition.NextState, this)) continue;
 
+                // can transition to a state with higher priority
                 bool isInterruption = !ExitCondition && IsInterruptible;
-                if (isInterruption && stateMachine.IsSameState(GetHighestPriority(SelfTransition, nextTransition), this))
-                    break;
+                bool isHigherPriorityState = !stateMachine.IsSameState(GetHigherPriorityState(SelfTransition, nextTransition), this);
+
+                if (isInterruption && !isHigherPriorityState) break;
 
                 stateMachine.TransitionTo(nextTransition.NextState);
 
@@ -88,20 +85,17 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         public sealed override void Exit()
         {
             ExitCondition = false;
-
             ExitLogic();
-
             if (OnExit != null) OnExit.TriggerEvent();
         }
 
-        public void SetTransitions(List<Transition> transitions)
+        public void SetTransitionList(List<Transition> transitionList)
         {
-            if (transitions == null) throw new ArgumentNullException(nameof(transitions));
-            if (transitions.Count == 0) throw new InvalidOperationException(
-                "(empty) no transitions to set.");
+            if (transitionList == null) throw new ArgumentNullException(nameof(transitionList));
+            if (transitionList.Count == 0) throw new InvalidOperationException("(empty) no transitions to set.");
 
-            Transitions = transitions;
-            Transitions.Sort(_comparer);
+            TransitionList = transitionList;
+            TransitionList.Sort(_comparer);
         }
 
         public void UnsubscribeConditionEvents()
@@ -111,7 +105,7 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         }
 
         protected virtual void EnterLogic() { }
-        protected virtual void ExecuteLogic(float deltaTime) { }
+        protected virtual void ExecuteLogic(StateMachineBase stateMachine, float deltaTime) { }
         protected virtual void ExitLogic() { }
 
         protected virtual void EnableEnter() => EnterCondition = true;
@@ -119,10 +113,9 @@ namespace TSLib.AI.Behaviour.StateMachines.PHFSM
         protected virtual void DisableEnter() => EnterCondition = false;
         protected virtual void DisableExit() => ExitCondition = false;
 
-        private PHS GetHighestPriority(Transition t1, Transition t2)
+        private PHS GetHigherPriorityState(Transition t1, Transition t2)
         {
-            if (_comparer.Compare(t1, t2) <= 0) return t1.NextState;
-            return t2.NextState;
+            return _comparer.Compare(t1, t2) <= 0 ? t1.NextState : t2.NextState;
         }
     }
 }
